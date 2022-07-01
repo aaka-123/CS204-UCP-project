@@ -1,0 +1,212 @@
+#include "cache.h"
+int p1=9,p2=7;
+     int ctr1=0,ctr2=0;
+   
+class ATD{
+    public:            
+    int validbit;     
+    int tag;
+    int cnt;
+    int lru;
+
+    ATD(){
+        tag=0;
+        validbit=0;
+        lru=16;
+        cnt=0;
+    }
+};
+ATD dss1[32][16];
+ATD dss2[32][16];
+int c1[16];
+int c2[16];
+void CACHE::llc_initialize_replacement()
+{
+    
+}
+
+
+
+// find replacement victim
+uint32_t CACHE::llc_find_victim(uint32_t cpu, uint64_t instr_id, uint32_t set, const BLOCK *current_set, uint64_t ip, uint64_t full_addr, uint32_t type)
+{
+    // baseline LRU
+  uint32_t way = 0;
+    
+    // fill invalid line firstx
+    for (way=0; way<NUM_WAY; way++) {   //check for cpu match and current partitioning
+        if (block[set][way].valid == false  ) {
+                  
+                 if(cpu==0) {ctr1++;}
+                 else {ctr2++; }
+            DP ( if (warmup_complete[cpu]) {
+            cout << "[" << NAME << "] " << _func_ << " instr_id: " << instr_id << " invalid set: " << set << " way: " << way;
+            cout << hex << " address: " << (full_addr>>LOG2_BLOCK_SIZE) << " victim address: " << block[set][way].address << " data: " << block[set][way].data;
+            cout << dec << " lru: " << block[set][way].lru << endl; });
+
+            break;
+        }
+    }
+      
+//max lru
+
+  
+  if (way == NUM_WAY) {
+    
+    uint64_t max1_lru=0,max2_lru=0;
+    for (way=0; way<NUM_WAY; way++) {
+   if(block[set][way].cpu ==0){
+   if(block[set][way].lru>max1_lru) max1_lru=block[set][way].lru;
+   }
+   else{
+    if(block[set][way].lru>max2_lru) max2_lru=block[set][way].lru;
+   }
+   }
+
+for(way=0;way<NUM_WAY;way++){
+if(block[set][way].cpu ==0 &&block[set][way].lru==max1_lru){
+  
+  if(ctr1>p1){
+                 if(cpu==0 ){
+                  DP ( if (warmup_complete[cpu]) {
+            cout << "[" << NAME << "] " << _func_ << " instr_id: " << instr_id << " invalid set: " << set << " way: " << way;
+            cout << hex << " address: " << (full_addr>>LOG2_BLOCK_SIZE) << " victim address: " << block[set][way].address << " data: " << block[set][way].data;
+            cout << dec << " lru: " << block[set][way].lru << endl; });
+
+                     break;    
+                 }
+                 if(cpu==1){
+                  DP ( if (warmup_complete[cpu]) {
+            cout << "[" << NAME << "] " << _func_ << " instr_id: " << instr_id << " invalid set: " << set << " way: " << way;
+            cout << hex << " address: " << (full_addr>>LOG2_BLOCK_SIZE) << " victim address: " << block[set][way].address << " data: " << block[set][way].data;
+            cout << dec << " lru: " << block[set][way].lru << endl; });
+
+                    ctr1--;
+                    ctr2++;
+                    break;
+                 }
+  }
+  else if(ctr2>p2 ){
+                                  DP ( if (warmup_complete[cpu]) {
+            cout << "[" << NAME << "] " << _func_ << " instr_id: " << instr_id << " invalid set: " << set << " way: " << way;
+            cout << hex << " address: " << (full_addr>>LOG2_BLOCK_SIZE) << " victim address: " << block[set][way].address << " data: " << block[set][way].data;
+            cout << dec << " lru: " << block[set][way].lru << endl; });
+
+break;
+  }
+  else{   DP ( if (warmup_complete[cpu]) {
+            cout << "[" << NAME << "] " << _func_ << " instr_id: " << instr_id << " invalid set: " << set << " way: " << way;
+            cout << hex << " address: " << (full_addr>>LOG2_BLOCK_SIZE) << " victim address: " << block[set][way].address << " data: " << block[set][way].data;
+            cout << dec << " lru: " << block[set][way].lru << endl; });
+
+           break;
+  }
+
+   }
+
+
+ else if(block[set][way].cpu ==1 &&block[set][way].lru==max2_lru){
+   if(ctr1>p1){   DP ( if (warmup_complete[cpu]) {
+            cout << "[" << NAME << "] " << _func_ << " instr_id: " << instr_id << " invalid set: " << set << " way: " << way;
+            cout << hex << " address: " << (full_addr>>LOG2_BLOCK_SIZE) << " victim address: " << block[set][way].address << " data: " << block[set][way].data;
+            cout << dec << " lru: " << block[set][way].lru << endl; });
+
+                break;
+  }
+  else if(ctr2>p2 ){
+
+ if(cpu==0){   
+                ctr1++;
+                ctr2--;
+                 DP ( if (warmup_complete[cpu]) {
+            cout << "[" << NAME << "] " << _func_ << " instr_id: " << instr_id << " invalid set: " << set << " way: " << way;
+            cout << hex << " address: " << (full_addr>>LOG2_BLOCK_SIZE) << " victim address: " << block[set][way].address << " data: " << block[set][way].data;
+            cout << dec << " lru: " << block[set][way].lru << endl; });
+
+                break;         
+                 }
+     if(cpu==1){  DP ( if (warmup_complete[cpu]) {
+            cout << "[" << NAME << "] " << _func_ << " instr_id: " << instr_id << " invalid set: " << set << " way: " << way;
+            cout << hex << " address: " << (full_addr>>LOG2_BLOCK_SIZE) << " victim address: " << block[set][way].address << " data: " << block[set][way].data;
+            cout << dec << " lru: " << block[set][way].lru << endl; });
+
+break;
+                 }
+  }
+  else{   DP ( if (warmup_complete[cpu]) {
+            cout << "[" << NAME << "] " << _func_ << " instr_id: " << instr_id << " invalid set: " << set << " way: " << way;
+            cout << hex << " address: " << (full_addr>>LOG2_BLOCK_SIZE) << " victim address: " << block[set][way].address << " data: " << block[set][way].data;
+            cout << dec << " lru: " << block[set][way].lru << endl; });
+
+           break;
+  }
+   }
+
+
+
+
+}
+
+   if (way ==NUM_WAY) {
+       cerr << "[" << NAME << "] " << __func__ << " no victim! set: " << set << endl;
+      assert(0);
+    }
+
+    return way;
+}
+}
+// called on every cache hit and cache fill
+void CACHE::llc_update_replacement_state(uint32_t cpu, uint32_t set, uint32_t way, uint64_t full_addr, uint64_t ip, uint64_t victim_addr, uint32_t type, uint8_t hit)   
+{
+    string TYPE_NAME;
+    if (type == LOAD)
+        TYPE_NAME = "LOAD";
+    else if (type == RFO)
+        TYPE_NAME = "RFO";
+    else if (type == PREFETCH)
+        TYPE_NAME = "PF";
+    else if (type == WRITEBACK)
+        TYPE_NAME = "WB";
+    else
+        assert(0);
+
+    if (hit)
+        TYPE_NAME += "_HIT";
+    else
+        TYPE_NAME += "_MISS";
+
+    if ((type == WRITEBACK) && ip)
+        assert(0);
+
+    // uncomment this line to see the LLC accesses
+    // cout << "CPU: " << cpu << "  LLC " << setw(9) << TYPE_NAME << " set: " << setw(5) << set << " way: " << setw(2) << way;
+    // cout << hex << " paddr: " << setw(12) << paddr << " ip: " << setw(8) << ip << " victim_addr: " << victim_addr << dec << endl;
+
+    // baseline LRU
+    
+    
+    
+     for (uint32_t i=0; i<NUM_WAY; i++) {
+        if (block[set][i].lru < block[set][way].lru) {
+            block[set][i].lru++;
+        }
+    }
+    block[set][way].lru = 0; // promote to the MRU position
+}
+
+void CACHE::llc_replacement_final_stats()
+{
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
